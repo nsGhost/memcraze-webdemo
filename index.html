@@ -183,8 +183,14 @@
     // Keep the WebGL render target matched to the canvas's on-screen size, accounting
     // for device pixel ratio, and re-sync on every resize / orientation change. This is
     // what makes the game actually responsive instead of a fixed 960x600 box.
+    // Phones report devicePixelRatio 3-4. Rendering a Unity scene at 3-4x a phone-sized
+    // viewport is 2.7-4.9 megapixels per frame, which mobile GPUs cannot sustain. Cap the
+    // render scale on touch devices; the display still downsamples it cleanly.
+    var IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    var MAX_DPR   = IS_MOBILE ? 2 : 3;
+
     function syncCanvasSize(instance) {
-      var dpr = window.devicePixelRatio || 1;
+      var dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       var w = Math.max(1, Math.floor(container.clientWidth  * dpr));
       var h = Math.max(1, Math.floor(container.clientHeight * dpr));
       if (canvas.width !== w || canvas.height !== h) {
