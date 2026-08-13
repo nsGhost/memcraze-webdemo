@@ -167,6 +167,10 @@
       }
     }
 
+    // Phones report devicePixelRatio 3-4; rendering a Unity scene at that scale is
+    // 2.7-4.9 megapixels per frame, which mobile GPUs cannot sustain.
+    var IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     var buildUrl  = "Build";
     var loaderUrl = buildUrl + "/WebGL.loader.js";
     var config = {
@@ -174,30 +178,17 @@
       frameworkUrl: buildUrl + "/WebGL.framework.js",
       codeUrl: buildUrl + "/WebGL.wasm",
       streamingAssetsUrl: "StreamingAssets",
+      // Cap the render scale on phones. This MUST go through Unity's own config so it is in
+      // effect from the very first frame. Setting canvas.width/height by hand instead does not
+      // survive launch (Unity re-applies its own sizing over it) but does stick when applied
+      // later from a rotation handler — which made the render target drop 1.5x mid-session and
+      // upscaled the whole UI permanently.
+      devicePixelRatio: IS_MOBILE ? 2 : undefined,
       companyName: "High Morale Visual Entertainment",
       productName: "MemCraze",
       productVersion: "1.2.0.2",
       showBanner: unityShowBanner,
     };
-
-    // Keep the WebGL render target matched to the canvas's on-screen size, accounting
-    // for device pixel ratio, and re-sync on every resize / orientation change. This is
-    // what makes the game actually responsive instead of a fixed 960x600 box.
-    // Phones report devicePixelRatio 3-4. Rendering a Unity scene at 3-4x a phone-sized
-    // viewport is 2.7-4.9 megapixels per frame, which mobile GPUs cannot sustain. Cap the
-    // render scale on touch devices; the display still downsamples it cleanly.
-    var IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    var MAX_DPR   = IS_MOBILE ? 2 : 3;
-
-    function syncCanvasSize(instance) {
-      var dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-      var w = Math.max(1, Math.floor(container.clientWidth  * dpr));
-      var h = Math.max(1, Math.floor(container.clientHeight * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width  = w;
-        canvas.height = h;
-      }
-    }
 
     loadingBar.style.display = "flex";
 
@@ -208,12 +199,9 @@
         progress.style.width = (100 * p) + "%";
       }).then((instance) => {
         loadingBar.style.display = "none";
-        syncCanvasSize(instance);
 
-        window.addEventListener("resize", () => syncCanvasSize(instance));
-        window.addEventListener("orientationchange", () => {
-          setTimeout(() => syncCanvasSize(instance), 100);
-        });
+        // No manual resize handling: the canvas is pinned to 100% of the container by CSS and
+        // Unity keeps its render target matched to that DOM size, including across rotation.
 
         document.querySelector("#unity-fullscreen-button").onclick = () => {
           instance.SetFullscreen(1);
