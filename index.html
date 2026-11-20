@@ -131,6 +131,19 @@
     #unity-fullscreen-button:hover {
       opacity: 1;
     }
+
+    /* While the main menu is up the game parks this button in a slot in its top bar and sizes it
+       to match (MemCrazeWeb.jslib sets left/top/width/height as percentages). In its default
+       corner it would cover the tab bar in portrait and the Play button in phone landscape. */
+    #unity-fullscreen-button.in-menu {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      line-height: 1;
+      border-radius: 28%;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
