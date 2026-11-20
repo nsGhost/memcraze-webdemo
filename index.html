@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
   <title>MemCraze</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d0d1a'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%234cc9f0' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E">
+  <!-- Logo images are built by Art/logo/build_assets.py into TemplateData/. -->
+  <link rel="icon" type="image/png" href="TemplateData/icon.png">
+  <link rel="apple-touch-icon" href="TemplateData/icon.png">
   <style>
     /* Fill the browser client area and follow every resize. Unity's stock template
        hardcodes canvas.style.width/height to 960x600 on desktop, which never responds
@@ -44,12 +46,17 @@
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     }
 
+    /* The lockup is 578 x 128 (2x); the alt text takes over if the image fails to load. */
     #unity-logo {
+      height: 64px;
+      width: auto;
+      max-width: 86vw;
+      object-fit: contain;
+      margin-bottom: 10px;
       font-size: 34px;
       font-weight: bold;
       letter-spacing: 4px;
       color: #4cc9f0;
-      margin-bottom: 4px;
     }
 
     #unity-loading-sub {
@@ -131,7 +138,7 @@
     <canvas id="unity-canvas" tabindex="-1"></canvas>
 
     <div id="unity-loading-bar">
-      <div id="unity-logo">MEMCRAZE</div>
+      <img id="unity-logo" src="TemplateData/logo.png" alt="MEMCRAZE">
       <div id="unity-loading-sub">TEST YOUR MEMORY</div>
       <div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
       <div id="unity-loading-note">First load downloads about 60&nbsp;MB &mdash; it is cached after this.</div>
