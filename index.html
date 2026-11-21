@@ -207,6 +207,11 @@
       companyName: "High Morale Visual Entertainment",
       productName: "MemCraze",
       productVersion: "1.2.0.2",
+      // Persist every write under Application.persistentDataPath to the browser's IndexedDB as
+      // it happens. Without this the save file (memcraze_save.json) only reaches the in-memory
+      // filesystem and is copied to IndexedDB when Unity happens to sync for its own reasons
+      // (at start-up), so progress made during a visit was gone after a reload.
+      autoSyncPersistentDataPath: true,
       showBanner: unityShowBanner,
     };
 
